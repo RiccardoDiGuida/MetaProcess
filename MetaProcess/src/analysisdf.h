@@ -11,8 +11,9 @@ class AnalysisDF : public ProcessDF
 public:
     AnalysisDF(QObject* parent=0);
     int ttest(QList<AnalysisResult>& res,const QString& facName,const QString& fac1,const QString& fac2,
-               bool paired,QString& msg,const QString& fac_pair="");
-    void mannwtest();
+               bool paired,bool multcomp,QString& msg,const QString& fac_pair="");
+    int mannwtest(QList<AnalysisResult>& res,const QString& facName,const QString& fac1,const QString& fac2,
+                   bool paired,bool multcomp,QString& msg,const QString& fac_pair="");
     void pca();
 
     void PrintTwoSampleTest(const QList<AnalysisResult>& lst, QFile* file);

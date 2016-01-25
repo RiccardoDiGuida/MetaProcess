@@ -492,7 +492,12 @@ int AnalysisDF::mannwtest(QList<AnalysisResult>& res,const QString& facName,cons
 
 void AnalysisDF::pca()
 {
-
+    mat coeff;
+    mat score;
+    vec latent;
+    vec tsquared;
+    
+    princomp(coeff, score, latent, tsquared, numDF);
 }
 
 void AnalysisDF::PrintTwoSampleTest(const QList<AnalysisResult>& lst, QFile* file)
