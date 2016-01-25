@@ -87,6 +87,8 @@ void MainWindow::setupActions()
 
     connect(actionT_test,SIGNAL(triggered(bool)),
             this,SLOT(ttestwid()));
+    connect(actionMann_Whitney_U_test,SIGNAL(triggered(bool)),
+            this,SLOT(ttestwid()));
 }
 
 void MainWindow::newProject()

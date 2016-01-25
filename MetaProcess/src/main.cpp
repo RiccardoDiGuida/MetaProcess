@@ -10,14 +10,6 @@ void chg(arma::subview_col<double> && cos) {cos(0)=99;}
 
 int main(int argc, char *argv[])
 {
-    mat A = randu<mat>(5,4);
-
-    mat coeff;
-    mat score;
-    vec latent;
-    vec tsquared;
-
-    princomp(coeff, score, latent, tsquared, A);
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

@@ -136,8 +136,7 @@
       <property name="title">
        <string>Non-parametric</string>
       </property>
-      <addaction name="actionMann_Whitney_U_test_unpaired"/>
-      <addaction name="actionMann_Whitney_U_test_paired"/>
+      <addaction name="actionMann_Whitney_U_test"/>
       <addaction name="actionKruskal_Wallis"/>
      </widget>
      <addaction name="menuParametric"/>
@@ -281,9 +280,9 @@
     <string>Mann Whitney-U test (unpaired)</string>
    </property>
   </action>
-  <action name="actionMann_Whitney_U_test_paired">
+  <action name="actionMann_Whitney_U_test">
    <property name="text">
-    <string>Mann Whitney-U test (paired)</string>
+    <string>Mann Whitney-U test (paired/unpaired)</string>
    </property>
   </action>
   <action name="actionKruskal_Wallis">
