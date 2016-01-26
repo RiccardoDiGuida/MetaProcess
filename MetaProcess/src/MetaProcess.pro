@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     viewmodel.cpp \
     analysisdf.cpp \
     ttestdial.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    multivardial.cpp
 
 
 INCLUDEPATH += C:\Armadillo\include
@@ -65,7 +66,8 @@ HEADERS  += mainwindow.h \
     wilcox_funcs.h \
     npq.h \
     wilcox_func_2.h \
-    qcustomplot.h
+    qcustomplot.h \
+    multivardial.h
 
 FORMS    += mainwindow.ui
 

@@ -146,7 +146,7 @@
      <property name="title">
       <string>Multivariate</string>
      </property>
-     <addaction name="actionPCA"/>
+     <addaction name="actionPCA_1"/>
      <addaction name="actionPLS_DA"/>
     </widget>
     <addaction name="menuUnivariate"/>
@@ -158,6 +158,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -290,11 +291,6 @@
     <string>Kruskal-Wallis</string>
    </property>
   </action>
-  <action name="actionPCA">
-   <property name="text">
-    <string>PCA</string>
-   </property>
-  </action>
   <action name="actionPLS_DA">
    <property name="text">
     <string>PLS-DA</string>
@@ -303,6 +299,26 @@
   <action name="actionShow_current_project">
    <property name="text">
     <string>Show current project</string>
+   </property>
+  </action>
+  <action name="actionScore_plot">
+   <property name="text">
+    <string>Score plot</string>
+   </property>
+  </action>
+  <action name="actionLoading_plot">
+   <property name="text">
+    <string>Loading plot</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionPCA_1">
+   <property name="text">
+    <string>PCA</string>
    </property>
   </action>
  </widget>

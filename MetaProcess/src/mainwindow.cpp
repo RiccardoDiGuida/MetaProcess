@@ -10,6 +10,7 @@
 #include "completewiz.h"
 #include "viewmodel.h"
 #include "ttestdial.h"
+#include "multivardial.h"
 #include <QSplitter>
 #include <QTableView>
 #include <QBoxLayout>
@@ -89,6 +90,8 @@ void MainWindow::setupActions()
             this,SLOT(ttestwid()));
     connect(actionMann_Whitney_U_test,SIGNAL(triggered(bool)),
             this,SLOT(ttestwid()));
+    connect(actionPCA_1,SIGNAL(triggered(bool)),
+            this,SLOT(PCAwid()));
 }
 
 void MainWindow::newProject()
@@ -483,6 +486,17 @@ void MainWindow::ttestwid()
                                                          msg,dbox->pair_fac->currentText());});
     connect(&data,&AnalysisDF::computationUniStatsDone,[this](){textEdit->append(msg);});
     connect(&data,SIGNAL(computationUniStatsDone()),SLOT(viewUniStats()));
+
+    clearFrame();
+    frame->setLayout(ly);
+}
+
+void MainWindow::PCAwid()
+{
+    multivardial* dbox=new multivardial(&data);
+    QVBoxLayout *ly = new QVBoxLayout;
+    QLabel *pb = new QLabel;
+    ly->addWidget(dbox);
 
     clearFrame();
     frame->setLayout(ly);

@@ -55,9 +55,8 @@ protected slots:
     void Complete();
 
     void ttestwid();
+    void PCAwid();
 /*     void ANOVAwid();
-    void MannW();
-    void MannWpair();
     void Wilcox();
     void PCAwid();
     void PLSwid();
