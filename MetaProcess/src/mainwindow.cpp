@@ -11,6 +11,7 @@
 #include "viewmodel.h"
 #include "ttestdial.h"
 #include "multivardial.h"
+#include "qcustomplot.h"
 #include <QSplitter>
 #include <QTableView>
 #include <QBoxLayout>
@@ -309,6 +310,34 @@ void MainWindow::viewUniStats()
     frame->setLayout(gl);
 }
 
+void MainWindow::viewMultiStats()
+{
+    QPushButton *but = new QPushButton("Export Results Table As...");
+
+    QCustomPlot *scorePlot = new QCustomPlot;
+    scorePlot->addGraph();
+
+    std::vector<double> stdvector = conv_to<std::vector<double> >::from(res_multi.score.col(0));
+    QVector<double> xs = QVector<double>::fromStdVector(stdvector);
+    stdvector = conv_to<std::vector<double> >::from(res_multi.score.col(1));
+    QVector<double> ys = QVector<double>::fromStdVector(stdvector);
+
+    scorePlot->graph(0)->setPen(QPen(Qt::red));
+    scorePlot->graph(0)->setLineStyle(QCPGraph::lsNone);
+    scorePlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 4));
+
+    scorePlot->graph(0)->setData(xs,ys);
+    scorePlot->xAxis->setRange(*std::min_element(xs.begin(),xs.end()),*std::max_element(xs.begin(),xs.end()));
+    scorePlot->yAxis->setRange(*std::min_element(ys.begin(),ys.end()),*std::max_element(ys.begin(),ys.end()));
+
+    QHBoxLayout* gl= new QHBoxLayout;
+    gl->addWidget(scorePlot);
+    gl->addWidget(but);
+
+    clearFrame();   // delete previous layout
+    frame->setLayout(gl);
+}
+
 void MainWindow::NoiseFilling()
 {
     QWizard *wiz = new QWizard;
@@ -497,6 +526,13 @@ void MainWindow::PCAwid()
     QVBoxLayout *ly = new QVBoxLayout;
     QLabel *pb = new QLabel;
     ly->addWidget(dbox);
+
+    connect(dbox,&QDialog::accepted,[this,dbox](){data.pca(res_multi,dbox->meta->currentText(),dbox->all->isChecked(),dbox->twoway->isChecked(),
+                                                        dbox->fac1_twow->currentText(),dbox->fac2_twow->currentText(),dbox->threeway->isChecked(),
+                                                        dbox->fac1_threew->currentText(),dbox->fac2_threew->currentText(),dbox->fac3_threew->currentText(),
+                                                        msg);});
+    connect(&data,&AnalysisDF::computationMultiStatsDone,[this](){textEdit->append(msg);});
+    connect(&data,SIGNAL(computationMultiStatsDone()),SLOT(viewMultiStats()));
 
     clearFrame();
     frame->setLayout(ly);

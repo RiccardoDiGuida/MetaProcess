@@ -23,17 +23,26 @@ multivardial::multivardial(AnalysisDF* df,QWidget * parent, Qt::WindowFlags f)
     fac3_threew_l = new QLabel("Factor 3");
     QGroupBox* gbox = new QGroupBox;
 
-    QVBoxLayout *vl = new QVBoxLayout;
-
-    vl->addWidget(all);
-    vl->addWidget(twoway);
-    vl->addWidget(threeway);
+    QGridLayout *gl_min = new QGridLayout;
+    gl_min->addWidget(all,0,0);
+    gl_min->addWidget(twoway,1,0);
+    gl_min->addWidget(threeway,2,0);
+    gl_min->addWidget(fac1_twow_l,1,1);
+    gl_min->addWidget(fac1_twow,1,2);
+    gl_min->addWidget(fac2_twow_l,1,3);
+    gl_min->addWidget(fac2_twow,1,4);
+    gl_min->addWidget(fac1_threew_l,2,1);
+    gl_min->addWidget(fac1_threew,2,2);
+    gl_min->addWidget(fac2_threew_l,2,3);
+    gl_min->addWidget(fac2_threew,2,4);
+    gl_min->addWidget(fac3_threew_l,2,5);
+    gl_min->addWidget(fac3_threew,2,6);
 
     all->setChecked(true);
     twoway->setCheckable(false);
     threeway->setCheckable(false);
 
-    gbox->setLayout(vl);
+    gbox->setLayout(gl_min);
 
     QStringList metaClass;
     metaClass.append(df->className);
@@ -72,33 +81,13 @@ multivardial::multivardial(AnalysisDF* df,QWidget * parent, Qt::WindowFlags f)
 
     dfRef = df;
 
-    QGridLayout *gl_min = new QGridLayout;
- /*   QLabel *p = new QLabel;
-    p->setMaximumHeight(all->height());
-    p->setMaximumWidth(all->width());
-    gl_min->addWidget(p,0,0);*/
-    gl_min->addWidget(fac1_twow_l,1,1);
-    gl_min->addWidget(fac1_twow,1,2);
-    gl_min->addWidget(fac2_twow_l,1,3);
-    gl_min->addWidget(fac2_twow,1,4);
-    gl_min->addWidget(fac1_threew_l,2,1);
-    gl_min->addWidget(fac1_threew,2,2);
-    gl_min->addWidget(fac2_threew_l,2,3);
-    gl_min->addWidget(fac2_threew,2,4);
-    gl_min->addWidget(fac3_threew_l,2,5);
-    gl_min->addWidget(fac3_threew,2,6);
-
-    QHBoxLayout *hl = new QHBoxLayout;
-    hl->addWidget(gbox);
-    hl->addLayout(gl_min);
-
     QHBoxLayout *hl_1 = new QHBoxLayout;
     hl_1->addWidget(meta_l);
     hl_1->addWidget(meta);
 
     QVBoxLayout *vbl = new QVBoxLayout;
     vbl->addLayout(hl_1);
-    vbl->addLayout(hl);
+    vbl->addWidget(gbox);
 
     vbl->addWidget(buttonBox);
 

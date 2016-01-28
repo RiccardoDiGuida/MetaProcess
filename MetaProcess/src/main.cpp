@@ -17,8 +17,3 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
-//    vec r(A.n_rows);
-//    FuncOnMat(A,r,[](rowvec const& w){return mean(w);});
-//    std::cout << r;
-
- //   std::cout << r%A.col(0);

@@ -11,6 +11,7 @@
 #include "tabselmodel.h"
 #include "analysisdf.h"
 #include "analysisresult.h"
+#include "multitestresult.h"
 
 class MainWindow : public QMainWindow,private Ui::MainWindow
 {
@@ -41,9 +42,11 @@ protected slots:
     void exportAs();
 
     void exportUniStatsAs();
+//    void exportMultiStatsAs();
 
     void viewProject();
     void viewUniStats();
+    void viewMultiStats();
 
     void NoiseFilling();
     void PeakFiltering();
@@ -78,6 +81,7 @@ private:
     QCheckBox *ckb_row;
     QCheckBox *ckb_col;
     QList<AnalysisResult> res_ttest;
+    MultitestResult res_multi;
     QString msg;
 
     int err;  //error code

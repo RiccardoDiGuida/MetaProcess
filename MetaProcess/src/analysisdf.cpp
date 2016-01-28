@@ -8,6 +8,9 @@
 
 const double EPSIL = 1E-5;
 double minqval = 5000;
+double ncomp = 2;        //COMPONENTS USED FOR NIPALS
+double tol = 1e-09;
+uint max_iter = 500;
 
 template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
@@ -490,14 +493,106 @@ int AnalysisDF::mannwtest(QList<AnalysisResult>& res,const QString& facName,cons
     }
 }
 
-void AnalysisDF::pca()
+int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool twow,const QString& fac1,const QString& fac2,
+                     bool threew,const QString& fac11,const QString& fac12,const QString& fac13,QString& msg)
 {
-    mat coeff;
-    mat score;
-    vec latent;
-    vec tsquared;
+    rowvec MeanCol(numDF.n_cols);
+    mat cpDF(numDF.n_rows,numDF.n_cols);
+    mat U;
 
-    princomp(coeff, score, latent, tsquared, numDF);
+    for(uint i=0;i<numDF.n_cols;i++)
+    {
+        MeanCol(i) = FuncOnColvec(numDF.col(i),[](vec w)->double{return mean(w);});
+        cpDF.col(i) = numDF.col(i)-MeanCol(i);
+    }
+
+    if(cpDF.is_finite())        //is no NAs then do singular value decomposition
+    {
+        svd(U,res.latent,res.coeff,cpDF);
+        res.score = cpDF * res.coeff;
+        res.latent = res.latent/sqrt(cpDF.n_rows-1);
+    }
+    else        //NIPALS
+    {
+        uint nc = cpDF.n_cols;
+        uint nr = cpDF.n_rows;
+        mat p(nc,ncomp);
+        mat t_mat(nr,ncomp);
+        vec eig(ncomp);
+        rowvec nc_ones(nc,fill::ones);
+        vec nr_ones(nr,fill::ones);
+        rowvec VarCol(numDF.n_cols);
+        for(uint i=0;i<cpDF.n_cols;i++)
+            VarCol(i) = FuncOnColvec(cpDF.col(i),[](vec w)->double{return var(w);});
+        uint id;
+        max(VarCol,id);
+        for(uint h=0;h<=ncomp;h++)
+        {
+            vec th = cpDF.col(id);
+            if(!th.is_finite())
+                th.elem(find_nonfinite(th)).zeros();
+            vec ph_old(nc);
+            ph_old.fill(1/sqrt(nc));
+            vec ph_new(nc);
+            uint iter=1,diff=1;
+
+            mat x_aux=cpDF;
+            x_aux.elem(find_nonfinite(x_aux)).zeros();
+
+            while(diff>tol && iter<=max_iter)
+            {
+                ph_new = cross(x_aux,th);
+                mat Th = th * nc_ones;
+                Th.elem(find_nonfinite(cpDF)).zeros();
+                mat th_cross = cross(Th,Th);
+                ph_new = ph_new/th_cross.diag();
+            }
+        }
+    }
+
+
+/*    numDF2.print();
+    res.score.print();
+
+    QFile file("C:/Users/Riccardo-Admin/Documents/numDF2.csv");
+    if (file.open(QIODevice::WriteOnly|QIODevice::Text))
+    {
+        QTextStream out(&file);
+
+        out.setRealNumberNotation(QTextStream::FixedNotation);
+        out.setRealNumberPrecision(5);
+
+        out.setNumberFlags(QTextStream::ForcePoint);
+
+        for(int i=0;i<numDF2.n_rows;i++)
+        {
+            for(unsigned int j=0;j<numDF2.n_cols;j++)
+                out << numDF2(i,j) << ",";
+
+            out << '\n';
+        }
+    }
+    QFile file2("C:/Users/Riccardo-Admin/Documents/score.csv");
+    if (file2.open(QIODevice::WriteOnly|QIODevice::Text))
+    {
+        QTextStream out(&file2);
+
+        out.setRealNumberNotation(QTextStream::FixedNotation);
+        out.setRealNumberPrecision(5);
+
+        out.setNumberFlags(QTextStream::ForcePoint);
+
+        for(int i=0;i<res.score.n_rows;i++)
+        {
+            for(unsigned int j=0;j<res.score.n_cols;j++)
+                out << res.score(i,j) << ",";
+
+            out << '\n';
+        }
+    } */
+
+    emit computationMultiStatsDone();
+    return 0;
 }
 
 void AnalysisDF::PrintTwoSampleTest(const QList<AnalysisResult>& lst, QFile* file)

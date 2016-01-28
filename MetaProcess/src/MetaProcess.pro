@@ -67,7 +67,8 @@ HEADERS  += mainwindow.h \
     npq.h \
     wilcox_func_2.h \
     qcustomplot.h \
-    multivardial.h
+    multivardial.h \
+    multitestresult.h
 
 FORMS    += mainwindow.ui
 
