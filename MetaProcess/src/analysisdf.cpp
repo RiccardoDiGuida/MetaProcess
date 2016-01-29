@@ -497,13 +497,108 @@ int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool t
                      bool threew,const QString& fac11,const QString& fac12,const QString& fac13,QString& msg)
 {
     rowvec MeanCol(numDF.n_cols);
-    mat cpDF(numDF.n_rows,numDF.n_cols);
     mat U;
+    mat cpDF;
+    mat numDF2;
+    QStringList extClass;
+    if(alls)
+    {
+        numDF2 = numDF;
+        cpDF.set_size(numDF2.n_rows,numDF2.n_cols);
+    }
+    else if(twow)
+    {
+        uvec Idx_fac1,Idx_fac2;
+        QStringList FactorsClass;
+        int ct=0;
+        int start=0;
+
+        if(facName==className)
+            FactorsClass = classCol;
+        else
+        {
+            int Idx = namesMetaData.indexOf(facName);
+            for(int i=0;i<metaDF.count();i++)
+                FactorsClass.append(metaDF.at(i).at(Idx));
+        }
+
+        while(FactorsClass.indexOf(fac1,start)!=-1)
+        {
+            Idx_fac1.insert_rows(ct,uvec{(uint)FactorsClass.indexOf(fac1,start)});
+            start = *(Idx_fac1.end()-1);
+            ct++;
+            start++;
+        }
+        ct=0;
+        start=0;                 //Collect indexes of factor2
+        while(FactorsClass.indexOf(fac2,start)!=-1)
+        {
+            Idx_fac2.insert_rows(ct,uvec{(uint)FactorsClass.indexOf(fac2,start)});
+            start = *(Idx_fac2.end()-1);
+            ct++;
+            start++;
+        }
+        uvec idxs = join_cols(Idx_fac1,Idx_fac2);
+        idxs = sort(idxs);
+        numDF2 = numDF.rows(idxs);
+        cpDF.set_size(numDF2.n_rows,numDF2.n_cols);
+        for(uint i : idxs)
+            extClass.push_back(FactorsClass[i]);
+    }
+    else
+    {
+        uvec Idx_fac1,Idx_fac2,Idx_fac3;
+        QStringList FactorsClass;
+        int ct=0;
+        int start=0;
+
+        if(facName==className)
+            FactorsClass = classCol;
+        else
+        {
+            int Idx = namesMetaData.indexOf(facName);
+            for(int i=0;i<metaDF.count();i++)
+                FactorsClass.append(metaDF.at(i).at(Idx));
+        }
+
+        while(FactorsClass.indexOf(fac11,start)!=-1)
+        {
+            Idx_fac1.insert_rows(ct,uvec{(uint)FactorsClass.indexOf(fac11,start)});
+            start = *(Idx_fac1.end()-1);
+            ct++;
+            start++;
+        }
+        ct=0;
+        start=0;                 //Collect indexes of factor2
+        while(FactorsClass.indexOf(fac12,start)!=-1)
+        {
+            Idx_fac2.insert_rows(ct,uvec{(uint)FactorsClass.indexOf(fac12,start)});
+            start = *(Idx_fac2.end()-1);
+            ct++;
+            start++;
+        }
+        ct=0;
+        start=0;                 //Collect indexes of factor3
+        while(FactorsClass.indexOf(fac13,start)!=-1)
+        {
+            Idx_fac3.insert_rows(ct,uvec{(uint)FactorsClass.indexOf(fac13,start)});
+            start = *(Idx_fac3.end()-1);
+            ct++;
+            start++;
+        }
+        uvec idxs = join_cols(Idx_fac1,Idx_fac2);
+        idxs = join_cols(idxs,Idx_fac3);
+        idxs = sort(idxs);
+        numDF2 = numDF.rows(idxs);
+        cpDF.set_size(numDF2.n_rows,numDF2.n_cols);
+        for(uint i : idxs)
+            extClass.push_back(FactorsClass[i]);
+    }
 
     for(uint i=0;i<numDF.n_cols;i++)
     {
-        MeanCol(i) = FuncOnColvec(numDF.col(i),[](vec w)->double{return mean(w);});
-        cpDF.col(i) = numDF.col(i)-MeanCol(i);
+        MeanCol(i) = FuncOnColvec(numDF2.col(i),[](vec w)->double{return mean(w);});
+        cpDF.col(i) = numDF2.col(i)-MeanCol(i);
     }
 
     if(cpDF.is_finite())        //is no NAs then do singular value decomposition
@@ -520,7 +615,7 @@ int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool t
         mat t_mat(nr,ncomp);
         vec eig(ncomp);
         rowvec nc_ones(nc,fill::ones);
-        vec nr_ones(nr,fill::ones);
+        rowvec nr_ones(nr,fill::ones);
         rowvec VarCol(numDF.n_cols);
         for(uint i=0;i<cpDF.n_cols;i++)
             VarCol(i) = FuncOnColvec(cpDF.col(i),[](vec w)->double{return var(w);});
@@ -529,6 +624,8 @@ int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool t
         for(uint h=0;h<=ncomp;h++)
         {
             vec th = cpDF.col(id);
+            uvec nonFin = find_nonfinite(cpDF);
+            uvec nonFin_t = find_nonfinite(cpDF.t());
             if(!th.is_finite())
                 th.elem(find_nonfinite(th)).zeros();
             vec ph_old(nc);
@@ -537,20 +634,43 @@ int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool t
             uint iter=1,diff=1;
 
             mat x_aux=cpDF;
-            x_aux.elem(find_nonfinite(x_aux)).zeros();
+            x_aux.elem(nonFin).zeros();
 
             while(diff>tol && iter<=max_iter)
             {
-                ph_new = cross(x_aux,th);
+                ph_new = x_aux.t() * th;
                 mat Th = th * nc_ones;
-                Th.elem(find_nonfinite(cpDF)).zeros();
-                mat th_cross = cross(Th,Th);
+                Th.elem(nonFin).zeros();
+                mat th_cross = Th.t()*Th;
                 ph_new = ph_new/th_cross.diag();
+
+                ph_new = ph_new/sqrt(dot(ph_new,ph_new));
+
+                th = x_aux * ph_new;
+                mat P = ph_new * nr_ones;
+                P.elem(nonFin_t).zeros();
+                mat ph_cross = P.t()*P;
+                th = th/ph_cross.diag();
+
+                vec tmp = pow(ph_new-ph_old,2);
+                diff = sum(tmp.elem(find_finite(tmp)));
+                ph_old = ph_new;
+                iter++;
             }
+            if(iter>max_iter)
+                msg = QString("Maximum number of iterations reached for comp%1").arg(h);
+            cpDF = cpDF - (th * ph_new.t());
+            p.col(h) = ph_new;
+            t_mat.col(h) = th;
+            th = pow(th,2);
+            eig(h)=sum(th.elem(find_finite(th)));
         }
+        eig=sqrt(eig);
+
+        res.coeff = p;
+        res.score = cpDF * p;
+        res.latent = eig/sqrt(cpDF.n_rows-1);        // OMITTED LAST PART OF IMPLEMENTATION ON MIXOMICS BECAUSE OF NO USE
     }
-
-
 /*    numDF2.print();
     res.score.print();
 
