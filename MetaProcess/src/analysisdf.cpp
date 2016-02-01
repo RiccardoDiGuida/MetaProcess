@@ -434,6 +434,7 @@ int AnalysisDF::mannwtest(QList<AnalysisResult>& res,const QString& facName,cons
                 temp.p_val=std::min(pnorm5(z,0,1,1,0),pnorm5(z,0,1,0,0));
             }
             temp.FC=med1/med2;
+            res.append(temp);
         }
     }
     else
@@ -489,8 +490,28 @@ int AnalysisDF::mannwtest(QList<AnalysisResult>& res,const QString& facName,cons
                 temp.p_val=std::min(pnorm5(z,0,1,1,0),pnorm5(z,0,1,0,0));
             }
             temp.FC=med1/med2;
+            res.append(temp);
         }
     }
+    if(multcomp)
+    {
+        vec pvals(res.size());
+        for(uint i=0;i<res.size();i++)
+            pvals(i)=res[i].p_val;
+        uvec pv_fin_idx = find_finite(pvals);
+        vec pvals_fin = pvals.elem(pv_fin_idx);
+        vec newps = Benjamini_Hoch(pvals_fin);
+        int lnct=0;
+        for(uword i : pv_fin_idx)
+            res[i].p_val=newps(lnct++);
+    }
+    ct=0;
+    for(uint i=0;i<res.size();i++)
+        if(res[i].p_val<=0.025)
+            ct++;
+    msg = QString("Mann Whitney-U test produced %1 significant peaks").arg(ct);
+    emit computationUniStatsDone();
+    return 0;
 }
 
 int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool twow,const QString& fac1,const QString& fac2,
@@ -500,27 +521,30 @@ int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool t
     mat U;
     mat cpDF;
     mat numDF2;
-    QStringList extClass;
+    QStringList FactorsClass;
+
+    if(facName==className)
+        FactorsClass = classCol;
+    else
+    {
+        int Idx = namesMetaData.indexOf(facName);
+        for(int i=0;i<metaDF.count();i++)
+            FactorsClass.append(metaDF.at(i).at(Idx));
+    }
+
+    res.className = facName;
+
     if(alls)
     {
         numDF2 = numDF;
         cpDF.set_size(numDF2.n_rows,numDF2.n_cols);
+        res.idxs_samples = linspace<uvec>(0,numDF2.n_rows-1,numDF2.n_rows);
     }
     else if(twow)
     {
         uvec Idx_fac1,Idx_fac2;
-        QStringList FactorsClass;
         int ct=0;
-        int start=0;
-
-        if(facName==className)
-            FactorsClass = classCol;
-        else
-        {
-            int Idx = namesMetaData.indexOf(facName);
-            for(int i=0;i<metaDF.count();i++)
-                FactorsClass.append(metaDF.at(i).at(Idx));
-        }
+        int start=0; 
 
         while(FactorsClass.indexOf(fac1,start)!=-1)
         {
@@ -538,28 +562,16 @@ int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool t
             ct++;
             start++;
         }
-        uvec idxs = join_cols(Idx_fac1,Idx_fac2);
-        idxs = sort(idxs);
-        numDF2 = numDF.rows(idxs);
+        res.idxs_samples = join_cols(Idx_fac1,Idx_fac2);
+        res.idxs_samples = sort(res.idxs_samples);
+        numDF2 = numDF.rows(res.idxs_samples);
         cpDF.set_size(numDF2.n_rows,numDF2.n_cols);
-        for(uint i : idxs)
-            extClass.push_back(FactorsClass[i]);
     }
     else
     {
         uvec Idx_fac1,Idx_fac2,Idx_fac3;
-        QStringList FactorsClass;
         int ct=0;
         int start=0;
-
-        if(facName==className)
-            FactorsClass = classCol;
-        else
-        {
-            int Idx = namesMetaData.indexOf(facName);
-            for(int i=0;i<metaDF.count();i++)
-                FactorsClass.append(metaDF.at(i).at(Idx));
-        }
 
         while(FactorsClass.indexOf(fac11,start)!=-1)
         {
@@ -586,13 +598,11 @@ int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool t
             ct++;
             start++;
         }
-        uvec idxs = join_cols(Idx_fac1,Idx_fac2);
-        idxs = join_cols(idxs,Idx_fac3);
-        idxs = sort(idxs);
-        numDF2 = numDF.rows(idxs);
+        res.idxs_samples = join_cols(Idx_fac1,Idx_fac2);
+        res.idxs_samples = join_cols(res.idxs_samples,Idx_fac3);
+        res.idxs_samples = sort(res.idxs_samples);
+        numDF2 = numDF.rows(res.idxs_samples);
         cpDF.set_size(numDF2.n_rows,numDF2.n_cols);
-        for(uint i : idxs)
-            extClass.push_back(FactorsClass[i]);
     }
 
     for(uint i=0;i<numDF.n_cols;i++)
@@ -617,12 +627,14 @@ int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool t
         rowvec nc_ones(nc,fill::ones);
         rowvec nr_ones(nr,fill::ones);
         rowvec VarCol(numDF.n_cols);
-        for(uint i=0;i<cpDF.n_cols;i++)
-            VarCol(i) = FuncOnColvec(cpDF.col(i),[](vec w)->double{return var(w);});
         uint id;
-        max(VarCol,id);
+
         for(uint h=0;h<=ncomp;h++)
         {
+            for(uint i=0;i<cpDF.n_cols;i++)
+                VarCol(i) = FuncOnColvec(cpDF.col(i),[](vec w)->double{return var(w);});
+
+            VarCol.max(id);
             vec th = cpDF.col(id);
             uvec nonFin = find_nonfinite(cpDF);
             uvec nonFin_t = find_nonfinite(cpDF.t());

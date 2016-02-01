@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QMAKE_LFLAGS += -Wl,--large-address-aware
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 

@@ -12,6 +12,7 @@
 #include "analysisdf.h"
 #include "analysisresult.h"
 #include "multitestresult.h"
+#include "qcustomplot.h"
 
 class MainWindow : public QMainWindow,private Ui::MainWindow
 {
@@ -42,7 +43,7 @@ protected slots:
     void exportAs();
 
     void exportUniStatsAs();
-//    void exportMultiStatsAs();
+    void exportMultiStatsAs(const QStringList& facs,QCustomPlot* scorepl);
 
     void viewProject();
     void viewUniStats();
@@ -58,6 +59,7 @@ protected slots:
     void Complete();
 
     void ttestwid();
+    void mannwid();
     void PCAwid();
 /*     void ANOVAwid();
     void Wilcox();

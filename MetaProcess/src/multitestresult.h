@@ -2,6 +2,7 @@
 #define MULTITESTRESULT
 
 #include <armadillo>
+#include <QString>
 
 using namespace arma;
 
@@ -11,7 +12,8 @@ public:
     mat coeff;
     mat score;
     vec latent;
-    vec tsquared;
+    uvec idxs_samples;
+    QString className;
 };
 
 #endif // MULTITESTRESULT
