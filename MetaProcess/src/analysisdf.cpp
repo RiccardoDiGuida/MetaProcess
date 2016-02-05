@@ -471,7 +471,7 @@ int AnalysisDF::mannwtest(QList<AnalysisResult>& res,const QString& facName,cons
             else
             {
                 vec sort_r = sort(r);
-                vec nties(sort_r.size());
+                vec nties(ur.size());
                 double prev = sort_r(0);
                 int ct=1,pos=0;
                 for(uint i=1;i<sort_r.n_elem;i++)
@@ -483,6 +483,7 @@ int AnalysisDF::mannwtest(QList<AnalysisResult>& res,const QString& facName,cons
                         nties(pos++)=ct;
                         ct=1;
                     }
+                nties(pos)=ct;
                 double z = Stat-n_x*n_y/2;
                 double sigma = sqrt((n_x*n_y/12)*((n_x+n_y+1)-sum(pow(nties,3)-nties)/((n_x+n_y)*(n_x+n_y-1))));
                 double corr=sgn(z)*0.5;

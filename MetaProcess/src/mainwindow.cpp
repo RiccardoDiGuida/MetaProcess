@@ -36,7 +36,10 @@ MainWindow::MainWindow(QWidget *parent) :
     MainSplitter->setCollapsible(1,false);
 
     view = new QTableView;
-    view->installEventFilter(this);
+
+//    QWidget * pWidget = view->viewport();
+ //   pWidget->installEventFilter(this);
+//    view->installEventFilter(this);
 
     QGridLayout* gl = new QGridLayout;
     frame->setLayout(gl);
@@ -712,7 +715,7 @@ void MainWindow::exportMultiStatsAs(const QStringList& facs,QCustomPlot* scorepl
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *e)
 {
-    if(watched==view && e->type()==QEvent::MouseButtonPress)
+    if(/*watched==view &&*/ e->type()==QEvent::MouseButtonPress)
     {
 //        QModelIndexList idxl = view->selectedIndexes();
         QMouseEvent *mou = static_cast<QMouseEvent*>(e);

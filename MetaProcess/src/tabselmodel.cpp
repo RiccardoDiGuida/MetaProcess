@@ -10,7 +10,7 @@ TabSelModel::TabSelModel(QAbstractItemModel * model)
 void TabSelModel::CheckSelection(const QModelIndex& mod)
 {
     qDebug() << "Inside mod.column=" << mod.column();
-    QModelIndexList ls = selectedIndexes();
+    QModelIndexList ls = selectedColumns();
 
     foreach(QModelIndex i, ls)
         qDebug() << i.column() << "," << i.row();
