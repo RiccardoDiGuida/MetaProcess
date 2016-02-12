@@ -571,8 +571,8 @@ void MainWindow::ttestwid()
     connect(dbox,&QDialog::accepted,[=,this](){data.ttest(res_ttest,dbox->meta->currentText(),dbox->fac_1->currentText(),
                                                          dbox->fac_2->currentText(),dbox->cb_pair->isChecked(),dbox->cb_multcomp->isChecked(),
                                                          msg,dbox->pair_fac->currentText());});
-    connect(&data,&AnalysisDF::computationUniStatsDone,[this](){textEdit->append(msg);});
-    connect(&data,SIGNAL(computationUniStatsDone()),SLOT(viewUniStats()));
+    connect(dbox,&QDialog::accepted,[this](){textEdit->append(msg);});
+    connect(dbox,SIGNAL(accepted()),SLOT(viewUniStats()));
 
     clearFrame();
     frame->setLayout(ly);
@@ -590,8 +590,11 @@ void MainWindow::mannwid()
     connect(dbox,&QDialog::accepted,[=,this](){data.mannwtest(res_ttest,dbox->meta->currentText(),dbox->fac_1->currentText(),
                                                          dbox->fac_2->currentText(),dbox->cb_pair->isChecked(),dbox->cb_multcomp->isChecked(),
                                                          msg,dbox->pair_fac->currentText());});
-    connect(&data,&AnalysisDF::computationUniStatsDone,[this](){textEdit->append(msg);});
-    connect(&data,SIGNAL(computationUniStatsDone()),SLOT(viewUniStats()));
+
+    connect(dbox,&QDialog::accepted,[this](){textEdit->append(msg);});
+    connect(dbox,SIGNAL(accepted()),SLOT(viewUniStats()));
+//    connect(&data,&AnalysisDF::computationUniStatsDone,[this](){textEdit->append(msg);});
+//    connect(&data,SIGNAL(computationUniStatsDone()),SLOT(viewUniStats()));
 
     clearFrame();
     frame->setLayout(ly);

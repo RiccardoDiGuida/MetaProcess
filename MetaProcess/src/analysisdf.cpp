@@ -7,7 +7,6 @@
 #include <QDebug>
 
 const double EPSIL = 1E-5;
-double minqval = 5000;
 double ncomp = 2;        //COMPONENTS USED FOR NIPALS
 double tol = 1e-09;
 uint max_iter = 500;
@@ -50,6 +49,7 @@ vec Benjamini_Hoch(vec p)
     tmp=p.rows(id);
     for(uint i=0;i<n;i++)
         q(i) = tmp(i)*n/(i+1);
+    double minqval = 5000;
     for(int i=n-1;i>=0;i--)
     {
         if(q(i)>minqval)
@@ -102,6 +102,7 @@ int AnalysisDF::ttest(QList<AnalysisResult>& res,const QString& facName,const QS
     QStringList FactorsClass;
     int ct=0;
     int start=0;                 //Collect indexes of factor1
+    res.clear();
 
     if(fac1==fac2)
     {
@@ -292,6 +293,7 @@ int AnalysisDF::mannwtest(QList<AnalysisResult>& res,const QString& facName,cons
     QStringList FactorsClass;
     int ct=0;
     int start=0;                 //Collect indexes of factor1
+    res.clear();
 
     if(fac1==fac2)
     {
@@ -442,6 +444,8 @@ int AnalysisDF::mannwtest(QList<AnalysisResult>& res,const QString& facName,cons
         for(uint i=0;i<numDF.n_cols;i++)
         {
             AnalysisResult temp;
+            if(cnamesNum[i]=="277")
+                int a;
             double med1 = FuncOnColvec(m_1.col(i),[](vec w)->double{return median(w);});
             double med2 = FuncOnColvec(m_2.col(i),[](vec w)->double{return median(w);});
             vec x = m_1.col(i);
@@ -465,7 +469,7 @@ int AnalysisDF::mannwtest(QList<AnalysisResult>& res,const QString& facName,cons
                 if(Stat>(n_x*n_y/2))
                     p=pwilcox(Stat-1,n_x,n_y,0,0);
                 else
-                    p=pwilcox(Stat-1,n_x,n_y,1,0);
+                    p=pwilcox(Stat,n_x,n_y,1,0);
                 temp.p_val=std::min(2*p,1.);
             }
             else
