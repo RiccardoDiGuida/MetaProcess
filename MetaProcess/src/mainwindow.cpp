@@ -94,6 +94,8 @@ void MainWindow::setupActions()
             this,SLOT(ttestwid()));
     connect(actionMann_Whitney_U_test,SIGNAL(triggered(bool)),
             this,SLOT(mannwid()));
+    connect(actionANOVA_one_way,SIGNAL(triggered(bool)),
+            this,SLOT(ANOVAwid()));
     connect(actionPCA_1,SIGNAL(triggered(bool)),
             this,SLOT(PCAwid()));
 }
@@ -598,6 +600,11 @@ void MainWindow::mannwid()
 
     clearFrame();
     frame->setLayout(ly);
+}
+
+void MainWindow::ANOVAwid()
+{
+
 }
 
 void MainWindow::PCAwid()

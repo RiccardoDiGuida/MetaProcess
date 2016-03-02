@@ -15,6 +15,7 @@ public:
                bool paired,bool multcomp,QString& msg,const QString& fac_pair="");
     int mannwtest(QList<AnalysisResult>& res,const QString& facName,const QString& fac1,const QString& fac2,
                    bool paired,bool multcomp,QString& msg,const QString& fac_pair="");
+    int aov(QList<AnalysisResult>& res,const QString& facName,bool multcomp,bool tukey,QString& msg);
     int pca(MultitestResult& res,const QString& facName,bool alls,bool twow,const QString& fac1,const QString& fac2,
              bool threew,const QString& fac11,const QString& fac12,const QString& fac13,QString& msg);
 

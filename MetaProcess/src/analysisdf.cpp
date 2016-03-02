@@ -519,6 +519,11 @@ int AnalysisDF::mannwtest(QList<AnalysisResult>& res,const QString& facName,cons
     return 0;
 }
 
+int AnalysisDF::aov(QList<AnalysisResult> &res, const QString &facName, bool multcomp, bool tukey, QString &msg)
+{
+
+}
+
 int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool twow,const QString& fac1,const QString& fac2,
                      bool threew,const QString& fac11,const QString& fac12,const QString& fac13,QString& msg)
 {
