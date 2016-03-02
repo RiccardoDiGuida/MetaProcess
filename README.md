@@ -1,4 +1,4 @@
-This softwares allows data treatment, univariate and multivariate analysis.
+This software allows data treatment, univariate and multivariate analysis.
 
 It expects data input to be fed as .csv, .txt or .tab.
 
