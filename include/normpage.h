@@ -8,6 +8,7 @@
 
 class NormPage : public QWizardPage
 {
+    Q_OBJECT
 public:
     NormPage(DataFrame* df,QWidget* parent=0);
 

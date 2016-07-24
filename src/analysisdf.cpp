@@ -637,7 +637,7 @@ int AnalysisDF::pca(MultitestResult& res,const QString& facName,bool alls,bool t
         rowvec nc_ones(nc,fill::ones);
         rowvec nr_ones(nr,fill::ones);
         rowvec VarCol(numDF.n_cols);
-        uint id;
+        uword id;
 
         for(uint h=0;h<=ncomp;h++)
         {

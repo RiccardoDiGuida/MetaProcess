@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     MainSplitter->setCollapsible(1,false);
 
     view = new QTableView;
+    Ui_MainWindow::menuBar->setNativeMenuBar(false);  //menu appears on the window
 
 //    QWidget * pWidget = view->viewport();
  //   pWidget->installEventFilter(this);
@@ -44,10 +45,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QGridLayout* gl = new QGridLayout;
     frame->setLayout(gl);
 
-    actionSave_Project->setEnabled(false);
-    actionSave_Project_As->setEnabled(false);
+    actionSave_Project->setEnabled(false);          // later connect all these functions to signals
+    actionSave_Project_As->setEnabled(false);       // emitted when dataframe is active
     actionExport_as->setEnabled(false);
     actionExport_image_as->setEnabled(false);
+
+    menuProcess->setEnabled(false);
+    menuStatistics->setEnabled(false);
+    menuView->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -105,9 +110,13 @@ void MainWindow::newProject()
     mFilePath = "";
     if(setTemporaryPage())
     {
-        actionSave_Project->setEnabled(true);
+        actionSave_Project->setEnabled(true);           //TODO: connect to signal from dataframe
         actionSave_Project_As->setEnabled(true);
         actionExport_as->setEnabled(true);
+
+        menuProcess->setEnabled(true);
+        menuStatistics->setEnabled(true);
+        menuView->setEnabled(true);
     }
 }
 
@@ -570,7 +579,7 @@ void MainWindow::ttestwid()
 
     res_ttest.clear();
 
-    connect(dbox,&QDialog::accepted,[=,this](){data.ttest(res_ttest,dbox->meta->currentText(),dbox->fac_1->currentText(),
+    connect(dbox,&QDialog::accepted,[=](){data.ttest(res_ttest,dbox->meta->currentText(),dbox->fac_1->currentText(),
                                                          dbox->fac_2->currentText(),dbox->cb_pair->isChecked(),dbox->cb_multcomp->isChecked(),
                                                          msg,dbox->pair_fac->currentText());});
     connect(dbox,&QDialog::accepted,[this](){textEdit->append(msg);});
@@ -589,7 +598,7 @@ void MainWindow::mannwid()
 
     res_ttest.clear();
 
-    connect(dbox,&QDialog::accepted,[=,this](){data.mannwtest(res_ttest,dbox->meta->currentText(),dbox->fac_1->currentText(),
+    connect(dbox,&QDialog::accepted,[=](){data.mannwtest(res_ttest,dbox->meta->currentText(),dbox->fac_1->currentText(),
                                                          dbox->fac_2->currentText(),dbox->cb_pair->isChecked(),dbox->cb_multcomp->isChecked(),
                                                          msg,dbox->pair_fac->currentText());});
 

@@ -7,7 +7,6 @@
 
 #include "ui_mainwindow.h"
 #include "datasetmodel.h"
-#include "mytabview.h"
 #include "tabselmodel.h"
 #include "analysisdf.h"
 #include "analysisresult.h"
