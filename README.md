@@ -16,7 +16,11 @@ It is convenient also to add some sample names and variable names. A row (or a c
 
 MetaProcess relies on [Qt](https://www.qt.io/) and [Armadillo](http://arma.sourceforge.net/). Once you have installed the appropriate libraries you can build the project as follows.
 
-Enter the directory of the project in command line and type
+Enter the directory of the project in command line. `export` the `CMAKE_PREFIX_PATH` to your Qt location. In my case it was
+```
+export CMAKE_PREFIX_PATH=~/Qt/5.4/clang_64
+```
+and then type
 ```
 mkdir build 
 cd build 
